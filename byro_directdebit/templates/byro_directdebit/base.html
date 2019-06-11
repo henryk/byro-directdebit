@@ -1,0 +1,29 @@
+{% extends "office/base_headline.html" %}
+{% load i18n %}
+
+{% block headline %}Direct Debit :: {% block directdebit_heading %}{% endblock %}{% endblock %}
+
+{% block content %}
+<ul class="nav nav-pills">
+  <li class="nav-item">
+    <a
+      class="nav-link {% if "finance.directdebit.dashboard" in url_name %}active{% endif %}"
+      href="{% url "plugins:byro_directdebit:finance.directdebit.dashboard" %}"
+    >
+        {% trans "Dashboard" %}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a
+      class="nav-link {% if "finance.directdebit.list" in url_name %}active{% endif %}"
+      href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}"
+    >
+        {% trans "Member list" %}
+    </a>
+  </li>
+</ul>
+
+{% block directdebit_content %}
+{% endblock %}
+
+{% endblock %}
