@@ -3,105 +3,136 @@
 
 {% block directdebit_heading %}{% trans "Dashboard" %}{% endblock %}
 
-{% block stylesheets %}
-<style>
-    .ddtree li {
-        padding-left: 5px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        border-left: 1px solid black;
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
-        list-style-type: none;
-        margin-top: 1px;
-        margin-bottom: 1px;
-    }
-</style>
-{% endblock %}
-
 {% block directdebit_content %}
 
-<ul class="ddtree">
-    <li><b>{{all_members}}</b> members in the database, of these,
-        <ul>
-            <li>
-                <b>{{with_due_balance}}</b> members with due balance, of these
-                <ul>
-                    {% if with_iban %}
-                    <li><b>{{with_iban}}</b> members with IBAN, of these
-                        <ul>
-                            {% if with_valid_iban %}
-                            <li><b>{{with_valid_iban}}</b> members with valid IBAN, of these
-                                <ul>
-                                    {% if with_active_sepa %}
-                                    <li><b>{{with_active_sepa}}</b> members with non-deactivated SEPA direct debit, of these
-                                        <ul>
-                                            {% if with_bic %}
-                                            <li><b>{{with_bic}}</b> members with BIC or automatically determined BIC, of these
-                                                <ul>
-                                                    {% if with_mandate_reference %}
-                                                    <li><b>{{with_mandate_reference}}</b> members which have a SEPA mandate reference
-                                                        <div class="btn-toolbar">
-                                                            <a class="btn btn-info" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=eligible">Show &hellip;</a>
-                                                            <button class="btn btn-primary btn-disabled" disabled>Issue direct debit &hellip;</button>
-                                                        </div>
-                                                    </li>
-                                                    {% endif %}
-                                                    {% if without_mandate_reference %}
-                                                    <li class="text-danger"><b>{{without_mandate_reference}}</b> members which are missing a SEPA mandate reference
-                                                        <div class="btn-toolbar">
-                                                            <a class="btn btn-info" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=no_mandate_reference">Show &hellip;</a>
-                                                            <button class="btn btn-secondary btn-disabled" disabled>Assign SEPA mandate reference &hellip;</button>
-                                                        </div>
-                                                    </li>
-                                                    {% endif %}
-                                                </ul>
-                                            </li>
-                                            {% endif %}
-                                            {% if without_bic %}
-                                            <li class="text-danger"><b>{{without_bic}}</b> members without BIC
-                                                <div class="btn-toolbar">
-                                                    <a class="btn btn-info" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=no_bic">Show &hellip;</a>
-                                                </div>
-                                            </li>
-                                            {% endif %}
-                                        </ul>
-                                    </li>
-                                    {% endif %}
-                                    {% if with_inactive_sepa %}
-                                    <li><b>{{with_inactive_sepa}}</b> members with deactivated direct debit</li>
-                                    {% endif %}
-                                    {% if with_bounced_sepa %}
-                                    <li class="text-danger"><b>{{with_bounced_sepa}}</b> members where the direct debit bounced in the past and has been disabled
-                                        <div class="btn-toolbar">
-                                            <a class="btn btn-info" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=bounced">Show &hellip;</a>
-                                        </div>
-                                    </li>
-                                    {% endif %}
-                                    {% if with_rescinded_sepa %}
-                                    <li class="text-danger"><b>{{with_rescinded_sepa}}</b> members where the direct debit mandate has been rescinded
-                                        <div class="btn-toolbar">
-                                            <a class="btn btn-info" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=rescinded">Show &hellip;</a>
-                                        </div>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </li>
-                            {% endif %}
-                            {% if without_valid_iban %}
-                                <li class="text-danger"><b>{{without_valid_iban}}</b> members with an invalid IBAN
-                                    <div class="btn-toolbar">
-                                        <a class="btn btn-info" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=invalid_iban">Show &hellip;</a>
-                                    </div>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                    {% endif %}
-                </ul>
-            </li>
-        </ul>
-    </li>
-</ul>
+<div class="dashboard-list">
+    <a class="dashboard-block" href="{% url "office:members.list" %}?filter=all">
+        <h1>
+            {% blocktrans trimmed count n=all_members %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "(in the database)" %}
+        </span>
+    </a>
+    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}">
+        <h1>
+            {% blocktrans trimmed count n=with_due_balance %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "with due balance" %}
+        </span>
+    </a>
+    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=deactivated">
+        <h1>
+            {% blocktrans trimmed count n=deactivated_sepa %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "with deactivated direct debit" %}
+        </span>
+    </a>
+    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=eligible">
+        <h1>
+            {% blocktrans trimmed count n=eligible %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "with due balance and correct SEPA direct debit information" %}
+        </span>
+    </a>
+</div>
+
+<button class="btn btn-primary btn-disabled" disabled>{% trans "Issue direct debit &hellip;" %}</button>
+
+<button class="btn btn-secondary btn-disabled" disabled>{% trans "Assign missing SEPA direct debit mandate references &hellip;" %}</button>
+
+
+<div class="dashboard-list">
+    {% if invalid_iban %}
+    <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=invalid_iban">
+        <h1>
+            {% blocktrans trimmed count n=invalid_iban %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "with an invalid IBAN" %}
+        </span>
+    </a>
+    {% endif %}
+    {% if no_bic %}
+    <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=no_bic">
+        <h1>
+            {% blocktrans trimmed count n=no_bic %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "with missing BIC" %}
+        </span>
+    </a>
+    {% endif %}
+    {% if rescinded %}
+    <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=rescinded">
+        <h1>
+            {% blocktrans trimmed count n=rescinded %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "where the direct debit mandate has been rescinded" %}
+        </span>
+    </a>
+    {% endif %}
+    {% if bounced %}
+    <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=bounced">
+        <h1>
+            {% blocktrans trimmed count n=bounced %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "where the direct debit bounced in the past and has been disabled" %}
+        </span>
+    </a>
+    {% endif %}
+    {% if no_mandate_reference %}
+    <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=no_mandate_reference">
+        <h1>
+            {% blocktrans trimmed count n=no_mandate_reference %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "which are missing a SEPA mandate reference" %}
+        </span>
+    </a>
+    {% endif %}
+</div>
+
 
 {% endblock %}
