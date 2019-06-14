@@ -6,7 +6,7 @@
 {% block directdebit_content %}
 
 <div class="dashboard-list">
-    <a class="dashboard-block" href="{% url "office:members.list" %}?filter=all">
+    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=all">
         <h1>
             {% blocktrans trimmed count n=all_members %}
             {{ n }} member
@@ -15,10 +15,10 @@
             {% endblocktrans %}
         </h1>
         <span class="dashboard-description">
-            {% trans "(in the database)" %}
+            {% trans "with paid memberships" %}
         </span>
     </a>
-    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}">
+    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=with_due_balance">
         <h1>
             {% blocktrans trimmed count n=with_due_balance %}
             {{ n }} member
@@ -30,7 +30,7 @@
             {% trans "with due balance" %}
         </span>
     </a>
-    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=deactivated">
+    <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=inactive">
         <h1>
             {% blocktrans trimmed count n=deactivated_sepa %}
             {{ n }} member
@@ -62,6 +62,20 @@
 
 
 <div class="dashboard-list">
+    {% if no_iban %}
+    <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=no_iban">
+        <h1>
+            {% blocktrans trimmed count n=no_iban %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "with missing IBAN" %}
+        </span>
+    </a>
+    {% endif %}
     {% if invalid_iban %}
     <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=invalid_iban">
         <h1>

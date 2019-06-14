@@ -17,33 +17,45 @@ class MemberList(ListView):
     def get_queryset(self):
         mode = self.request.GET.get('filter', 'all')
 
-        all_members = sorted(Member.objects.all(), key= lambda m: m.pk)
+        all_members = list(Member.objects.filter(
+            Q(memberships__amount__gt=0) |
+            Q(bookings__debit_account=SpecialAccounts.fees_receivable)
+        ).order_by('-id').distinct().all())
 
         if mode == 'all':
             return list(all_members)
+
+        if mode == 'invalid_iban':
+            return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.INVALID_IBAN]
+
+        elif mode == 'rescinded':
+            return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.RESCINDED]
+
+        elif mode == 'bounced':
+            return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.BOUNCED]
+
+        elif mode == 'no_bic':
+            return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.NO_BIC]
+
+        elif mode == 'no_iban':
+            return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.NO_IBAN]
+
+        elif mode == "no_mandate_reference":
+            return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.NO_MANDATE_REFERENCE]
 
         with_due_balance = [
             member for member in all_members
             if member.balance < 0
         ]
 
-        if mode == 'invalid_iban':
-            return [m for m in with_due_balance if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.INVALID_IBAN]
+        if mode == 'with_due_balance':
+            return with_due_balance
 
         elif mode == 'inactive':
             return [m for m in with_due_balance if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.INACTIVE]
 
-        elif mode == 'rescinded':
-            return [m for m in with_due_balance if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.RESCINDED]
-
-        elif mode == 'bounced':
-            return [m for m in with_due_balance if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.BOUNCED]
-
-        elif mode == 'no_bic':
-            return [m for m in with_due_balance if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.NO_BIC]
-
-        elif mode == "no_mandate_reference":
-            return [m for m in with_due_balance if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.NO_MANDATE_REFERENCE]
+        elif mode == "eligible":
+            return [m for m in with_due_balance if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.OK]
 
         else:
             return list(with_due_balance)
@@ -72,6 +84,7 @@ class Dashboard(TemplateView):
             'all_members': len(all_members),
             'with_due_balance': len(with_due_balance),
             'deactivated_sepa': w_due_counts[SepaDirectDebitState.INACTIVE],
+            'no_iban': counts[SepaDirectDebitState.NO_IBAN],
             'eligible': w_due_counts[SepaDirectDebitState.OK],
             'invalid_iban': counts[SepaDirectDebitState.INVALID_IBAN],
             'no_bic': counts[SepaDirectDebitState.NO_BIC],
