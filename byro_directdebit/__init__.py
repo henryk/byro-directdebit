@@ -16,6 +16,7 @@ class PluginApp(AppConfig):
     def ready(self):
         from . import signals  # NOQA
         from . import urls # NOQA
+        from . import models # NOQA
 
 
 default_app_config = 'byro_directdebit.PluginApp'

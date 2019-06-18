@@ -5,6 +5,21 @@
 
 {% block directdebit_content %}
 
+{% if not creditor_id %}
+
+<div class="card mb-4">
+    <div class="card-header text-danger">
+        <h2>{% trans "Error: Creditor ID not set" %}</h2>
+    </div>
+    <div class="card-body">
+        <p>{% trans "The SEPA Direct Debit creditor identifier must be set in the configuration, before the direct debit functions can be used." %}</p>
+        <a href="{% url "office:settings.base" %}#id_DirectDebitConfiguration-creditor_id" class="btn btn-primary">{% trans "Go to configuration" %}</a>
+    </div>
+</div>
+
+{% endif %}
+
+
 <div class="dashboard-list">
     <a class="dashboard-block" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=all">
         <h1>
@@ -56,9 +71,13 @@
     </a>
 </div>
 
+{% if creditor_id and eligible %}
 <button class="btn btn-primary btn-disabled" disabled>{% trans "Issue direct debit &hellip;" %}</button>
+{% endif %}
 
-<button class="btn btn-secondary btn-disabled" disabled>{% trans "Assign missing SEPA direct debit mandate references &hellip;" %}</button>
+{% if creditor_id and no_mandate_reference %}
+<a class="btn btn-secondary" href="{% url "plugins:byro_directdebit:finance.directdebit.assign_sepa_mandates" %}">{% trans "Assign missing SEPA direct debit mandate references &hellip;" %}</a>
+{% endif %}
 
 
 <div class="dashboard-list">

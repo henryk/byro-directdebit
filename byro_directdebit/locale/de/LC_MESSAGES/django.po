@@ -2,11 +2,277 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-07 19:01+0100\n"
+"POT-Creation-Date: 2019-06-18 12:14+0000\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Henryk Plötz\n"
+"Last-Translator: Henryk Plötz <henryk@ploetzli.ch>\n"
 "Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.3\n"
+
+#: __init__.py:10
+msgid "Byro SEPA Direct Debit plugin"
+msgstr "Byro SEPA-Einzugs-Plugin"
+
+#: __init__.py:12
+msgid ""
+"This plugin allows membership fees to be collected with SEPA direct debit"
+msgstr ""
+"Mit diesem Plugin können Mitgliedsbeiträge mit SEPA-Lastschrift eingezogen "
+"werden"
+
+#: default.py:5
+msgid "SEPA Direct Debit mandate reference notification"
+msgstr "Mitteilung der SEPA-Kontoeinzugs-Mandatsreferenz"
+
+#: default.py:8
+#, python-brace-format
+msgid ""
+"Hi,\n"
+"\n"
+"this is to inform you of the SEPA mandate reference we will be using in "
+"the\n"
+"future to issue direct debits for your {association_name} membership fees.\n"
+"\n"
+" Mandate reference: {sepa_mandate_reference}\n"
+" Your IBAN on file: {sepa_iban}\n"
+" Your BIC:          {sepa_bic}\n"
+" \n"
+" Our Creditor ID:   {creditor_id}\n"
+"\n"
+"If you have any questions relating to your member fees or you want to "
+"update\n"
+"your member data, please contact us at {contact}.\n"
+"\n"
+"{additional_information}\n"
+"\n"
+"Thanks,\n"
+"the robo clerk"
+msgstr ""
+"Hallo\n"
+"\n"
+"hiermit teilen wir dir die SEPA-Mandatsreferenz zu, mit der wir Einzüge "
+"für\n"
+"deine Mitgliedsbeiträge für die Mitgliedschaft bei {association_name}\n"
+"durchführen werden.\n"
+"\n"
+" Mandatsreferenz:  {sepa_mandate_reference}\n"
+" Deine IBAN: {sepa_iban}\n"
+" Deine BIC: {sepa_bic}\n"
+" \n"
+" Unsere Gläubiger-ID: {creditor_id}\n"
+"\n"
+"Wenn du Fragen zu deinen Mitgliedsbeiträgen hast oder\n"
+"deine Mitgliedsdaten ändern möchtest, kontaktiere uns bitte\n"
+"unter {contact}.\n"
+"\n"
+"{additional_information}\n"
+"\n"
+"Danke\n"
+"  der Robo-Schreiber"
+
+#: models.py:8
+msgid "SEPA Direct Debit settings"
+msgstr "SEPA-Lastschrifteinstellungen"
+
+#: models.py:13
+msgid "SEPA Creditor ID"
+msgstr "SEPA-Gläubiger-ID"
+
+#: models.py:19
+msgid "SEPA Direct Debit mandate reference prefix"
+msgstr "Präfix für SEPA-Kontoeinzugsmandatsreferenz"
+
+#: models.py:20 views.py:117
+msgid ""
+"A short prefix that should be part of every assigned mandate reference to "
+"help the debtor identify the creditor. Good example: Short name of your "
+"organization (3-5 characters)."
+msgstr ""
+"Ein kurzes Präfix, das Teil jeder zugewiesenen Mandatsreferenz sein sollte, "
+"um dem Mitglied zu helfen, den Gläubiger zu identifizieren. Gutes Beispiel: "
+"Kurzname der Organisation (3-5 Zeichen)."
+
+#: signals.py:15
+msgid "Direct debit"
+msgstr "Kontoeinzug"
+
+#: templates/byro_directdebit/assign_sepa_mandates.html:5
+msgid "Assign SEPA direct debit mandate references"
+msgstr "Zuweisen von SEPA-Lastschriftmandatsreferenzen"
+
+#: templates/byro_directdebit/assign_sepa_mandates.html:11
+msgid "SEPA Direct Debit Mandate Reference Properties"
+msgstr "Eigenschaften der Mandatsreferenz"
+
+#: templates/byro_directdebit/assign_sepa_mandates.html:15
+msgid "Notification E-Mail"
+msgstr "Benachrichtigungs-E-Mail"
+
+#: templates/byro_directdebit/assign_sepa_mandates.html:22
+#, python-format
+msgid "Assign %(n)s mandate reference"
+msgid_plural "Assign %(n)s mandate references"
+msgstr[0] "%(n)s Mandatsreferenz zuweisen"
+msgstr[1] "%(n)s Mandatsreferenzen zuweisen"
+
+#: templates/byro_directdebit/base.html:13
+#: templates/byro_directdebit/dashboard.html:4
+msgid "Dashboard"
+msgstr "Überblick"
+
+#: templates/byro_directdebit/base.html:21
+#: templates/byro_directdebit/list.html:4
+msgid "Member list"
+msgstr "Mitgliederliste"
+
+#: templates/byro_directdebit/dashboard.html:12
+msgid "Error: Creditor ID not set"
+msgstr "Fehler: Gläubigeridentifikationsnummer nicht festgelegt"
+
+#: templates/byro_directdebit/dashboard.html:15
+msgid ""
+"The SEPA Direct Debit creditor identifier must be set in the configuration, "
+"before the direct debit functions can be used."
+msgstr ""
+"Die SEPA-Gläubigeridentifikationsnummer muss in der Konfiguration "
+"eingetragen werden, bevor die Lastschriftfunktionen verwendet werden können."
+
+#: templates/byro_directdebit/dashboard.html:16
+msgid "Go to configuration"
+msgstr "Zur Konfiguration"
+
+#: templates/byro_directdebit/dashboard.html:26
+#: templates/byro_directdebit/dashboard.html:38
+#: templates/byro_directdebit/dashboard.html:50
+#: templates/byro_directdebit/dashboard.html:62
+#: templates/byro_directdebit/dashboard.html:87
+#: templates/byro_directdebit/dashboard.html:101
+#: templates/byro_directdebit/dashboard.html:115
+#: templates/byro_directdebit/dashboard.html:129
+#: templates/byro_directdebit/dashboard.html:143
+#: templates/byro_directdebit/dashboard.html:157
+#, python-format
+msgid "%(n)s member"
+msgid_plural "%(n)s members"
+msgstr[0] "%(n)s Mitglied"
+msgstr[1] "%(n)s Mitglieder"
+
+#: templates/byro_directdebit/dashboard.html:33
+msgid "with paid memberships"
+msgstr "mit kostenpflichtigen Mitgliedschaften"
+
+#: templates/byro_directdebit/dashboard.html:45
+msgid "with due balance"
+msgstr "mit offenen Beträgen"
+
+#: templates/byro_directdebit/dashboard.html:57
+msgid "with deactivated direct debit"
+msgstr "mit deaktiviertem Lastschriftverfahren"
+
+#: templates/byro_directdebit/dashboard.html:69
+msgid "with due balance and correct SEPA direct debit information"
+msgstr "mit offenen Beträgen und korrekten SEPA-Lastschriftinformationen"
+
+#: templates/byro_directdebit/dashboard.html:75
+msgid "Issue direct debit &hellip;"
+msgstr "Einzug durchführen &hellip;"
+
+#: templates/byro_directdebit/dashboard.html:79
+msgid "Assign missing SEPA direct debit mandate references &hellip;"
+msgstr "Zuweisen fehlender SEPA-Lastschriftmandatsreferenzen &hellip;"
+
+#: templates/byro_directdebit/dashboard.html:94
+msgid "with missing IBAN"
+msgstr "mit fehlender IBAN"
+
+#: templates/byro_directdebit/dashboard.html:108
+msgid "with an invalid IBAN"
+msgstr "mit einer ungültigen IBAN"
+
+#: templates/byro_directdebit/dashboard.html:122
+msgid "with missing BIC"
+msgstr "mit fehlendem BIC"
+
+#: templates/byro_directdebit/dashboard.html:136
+msgid "where the direct debit mandate has been rescinded"
+msgstr "bei denen das Lastschriftmandat aufgehoben wurde"
+
+#: templates/byro_directdebit/dashboard.html:150
+msgid "where the direct debit bounced in the past and has been disabled"
+msgstr ""
+"bei denen die Lastschrift in der Vergangenheit zurückgegangen ist und "
+"deaktiviert wurde"
+
+#: templates/byro_directdebit/dashboard.html:164
+msgid "which are missing a SEPA mandate reference"
+msgstr "denen eine SEPA-Mandatsreferenz fehlt"
+
+#: templates/byro_directdebit/list.html:11
+msgid "Direct Debit state"
+msgstr "Lastschriftzustand"
+
+#: templates/byro_directdebit/list.html:12
+msgid "Number"
+msgstr "Zahl"
+
+#: templates/byro_directdebit/list.html:13
+msgid "Name"
+msgstr "Name"
+
+#: templates/byro_directdebit/list.html:14
+msgid "Balance"
+msgstr "Kontostand"
+
+#: templates/byro_directdebit/list.html:15
+msgid "IBAN"
+msgstr "IBAN"
+
+#: templates/byro_directdebit/list.html:16
+msgid "BIC"
+msgstr "BIC"
+
+#: templates/byro_directdebit/list.html:17
+msgid "Mandate reference"
+msgstr "Mandatsreferenz"
+
+#: templates/byro_directdebit/list.html:43
+msgid "Mandate reference missing"
+msgstr "Mandatsreferenz fehlt"
+
+#: views.py:123
+msgid ""
+"Length of the generated SEPA direct debit mandate references (including the "
+"prefix)."
+msgstr ""
+"Länge der generierten SEPA-Lastschriftmandatsreferenzen (einschließlich des "
+"Präfixes)."
+
+#: views.py:253
+#, python-format
+msgid ""
+"Assigned %(n)s mandate reference. Check the e-mail outbox for the "
+"notification mail."
+msgid_plural ""
+"Assigned %(n)s mandate references. Check the e-mail outbox for the "
+"notification mails."
+msgstr[0] ""
+"%(n)s Mandatsreferenz zugewiesen. Schauen Sie in den E-Mail-Ausgang für die "
+"Benachrichtigungsmail."
+msgstr[1] ""
+"%(n)s Mandatsreferenzen zugewiesen. Schauen Sie in den E-Mail-Ausgang für "
+"die Benachrichtigungsmails."
+
+#: views.py:265
+#, python-format
+msgid "%(n)s mandate reference could not be assigned."
+msgid_plural "%(n)s mandate references could not be assigned."
+msgstr[0] "%(n)s Mandatsreferenz konnte nicht zugewiesen werden."
+msgstr[1] "%(n)s Mandatsreferenzen konnten nicht zugewiesen werden."
+
+#: views.py:276
+msgid "Nothing to do. Nothing done."
+msgstr "Nichts zu tun. Nichts getan."

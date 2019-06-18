@@ -1,0 +1,29 @@
+{% extends "byro_directdebit/base.html" %}
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block directdebit_heading %}{% trans "Assign SEPA direct debit mandate references" %}{% endblock %}
+
+{% block directdebit_content %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="card mb-2">
+            <div class="card-header"><h4>{% trans "SEPA Direct Debit Mandate Reference Properties" %}</h4></div>
+            <div class="card-body">{% bootstrap_form form layout='horizontal' exclude='subject,text' %}</div>
+        </div>
+        <div class="card mb-2">
+            <div class="card-header"><h4>{% trans "Notification E-Mail" %}</h4></div>
+            <div class="card-body">
+                {% bootstrap_field form.subject layout='horizontal' %}
+                {% bootstrap_field form.text layout='horizontal' %}
+            </div>
+        </div>
+
+        <button class="btn btn-success" type="submit">{% blocktrans trimmed count n=no_mandate_reference %}
+            Assign {{ n }} mandate reference
+            {% plural %}
+            Assign {{ n }} mandate references
+            {% endblocktrans %}</button>
+    </form>
+
+{% endblock %}
