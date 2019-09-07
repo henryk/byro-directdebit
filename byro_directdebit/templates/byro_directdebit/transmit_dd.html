@@ -1,0 +1,92 @@
+{% extends "byro_directdebit/base.html" %}
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block directdebit_heading %}{% trans "Prepare and execute SEPA direct debit" %}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .cards-progress .card::after {
+        content: '>';
+        display: block;
+        position: absolute;
+        font-size: 200%;
+        right: -1.5ex;
+        top: 30%;
+    }
+    .cards-progress .card:last-child::after {
+        content: none;
+    }
+</style>
+{% endblock %}
+
+{% block directdebit_content %}
+    <div class="card-deck mb-4 cards-progress">
+        <div class="card">
+            <div class="card-body">
+                <p>{% blocktrans trimmed %}
+                    Verify the member list and clean up data inconsistencies.
+                {% endblocktrans %}</p>
+            </div>
+            <div class="card-footer">{% trans "Step 1: Verify member data" %} <span class="fa fa-check"></span></div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <p>{% blocktrans trimmed %}
+                    Select debit date and provide a notification mail template.
+                {% endblocktrans %}</p>
+            </div>
+            <div class="card-footer ">{% trans "Step 2: Prepare debit" %} <span class="fa fa-check"></span></div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <p>{% blocktrans trimmed %}
+                    Transmit the direct debit order to your bank.
+                {% endblocktrans %}</p>
+            </div>
+            <div class="card-footer text-white bg-primary">{% trans "Step 3: Transmit to bank" %}</div>
+        </div>
+        <div class="card bg-light text-muted">
+            <div class="card-body">
+                <p>{% blocktrans trimmed %}
+                   Authorize the order by entering a TAN.
+                {% endblocktrans %}</p>
+            </div>
+            <div class="card-footer">{% trans "Step 4: Confirm execution" %}</div>
+        </div>
+    </div>
+{% if pending_mails %}
+    <div class="card mb-3 w-50 border-warning" style="margin-left: auto; margin-right: auto;">
+        <div class="card-header"><h4>{% trans "Notification e-mails pending" %}</h4></div>
+        <div class="card-body">
+            <p>{% blocktrans trimmed %}
+                Notification e-mails have been placed into the e-mail outbox, but were not sent automatically.
+                Please visit the outbox and send the notifications as is, or edit them before sending.
+                You can do this now (in a new window), or after transmitting the direct debit order to your bank.
+            {% endblocktrans %}</p>
+            <a class="btn btn-secondary" href="{% url 'office:mails.outbox.list' %}" target="_blank">{% trans "Outbox (new window)" %}</a>
+        </div>
+    </div>
+{% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="card mb-2">
+            <div class="card-header"><h4>{% trans "PIN request" %}</h4></div>
+            <div class="card-body">
+                <p>
+                    You are about to transmit a direct debit order for <strong>{{ debit_count }}</strong> debits over
+                    <strong>{{ debit_currency }} {{ debit_sum }}</strong> to be deposited into
+                    <strong>{{ debit_account }}</strong> to your bank for execution.
+                </p>
+            </div>
+            <div class="card-body">
+                {% for field in fints_form %}
+                {% bootstrap_field field layout='horizontal' %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <button class="btn btn-success" type="submit">{% trans "Transmit" %}</button>
+    </form>
+
+{% endblock %}

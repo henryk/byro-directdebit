@@ -33,7 +33,7 @@ setup(
     author_email='henryk@ploetzli.ch',
     license='Apache Software License',
 
-    install_requires=['schwifty'],
+    install_requires=['schwifty', 'workalendar', 'sepaxml==2.1.*'],
     packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
     cmdclass=cmdclass,

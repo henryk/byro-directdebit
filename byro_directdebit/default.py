@@ -25,3 +25,32 @@ Thanks,
 the robo clerk'''
     )
 )
+
+DEBIT_NOTIFICATION_SUBJECT = LazyI18nString.from_gettext(
+    _('SEPA Direct Debit notification'))
+DEBIT_NOTIFICATION_TEXT = LazyI18nString.from_gettext(
+    _(
+        '''Hi,
+        
+this is to inform you of the SEPA direct debit we'll be issuing based on
+the SEPA direct debit mandate you gave us for your {association_name}
+membership fees.
+
+ Debit date:        {debit_date}
+ Amount:            {amount}
+
+ Mandate reference: {sepa_mandate_reference}
+ Your IBAN on file: {sepa_iban}
+ Your BIC:          {sepa_bic}
+
+ Our Creditor ID:   {creditor_id}
+
+If you have any questions relating to your member fees or you want to update
+your member data, please contact us at {contact}.
+
+{additional_information}
+
+Thanks,
+the robo clerk'''
+    )
+)

@@ -72,7 +72,7 @@
 </div>
 
 {% if creditor_id and eligible %}
-<button class="btn btn-primary btn-disabled" disabled>{% trans "Issue direct debit &hellip;" %}</button>
+<a class="btn btn-primary" href="{% url "plugins:byro_directdebit:finance.directdebit.prepare_dd" %}">{% trans "Prepare direct debit &hellip;" %}</a>
 {% endif %}
 
 {% if creditor_id and no_mandate_reference %}
