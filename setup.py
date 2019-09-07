@@ -25,7 +25,7 @@ cmdclass = {
 
 setup(
     name='byro-directdebit',
-    version='0.0.1',
+    version='0.0.2',
     description='This plugin allows membership fees to be collected with SEPA direct debit',
     long_description=long_description,
     url='https://github.com/henryk/byro-directdebit',
