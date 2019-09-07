@@ -38,7 +38,6 @@ try:
     from byro_fints.plugin_interface import FinTSInterface
     from fints.client import FinTSOperations, NeedTANResponse, TransactionResponse, ResponseStatus
 except ImportError:
-    raise
     FinTSInterface = None
 
 SUPPORTED_PAIN_FORMATS = [
