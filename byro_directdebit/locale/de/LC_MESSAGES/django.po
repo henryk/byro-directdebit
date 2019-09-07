@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-18 12:14+0000\n"
+"POT-Creation-Date: 2019-09-07 15:45+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Henryk Plötz <henryk@ploetzli.ch>\n"
 "Language-Team: \n"
@@ -13,22 +13,22 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.2.3\n"
 
-#: __init__.py:10
+#: .\byro_directdebit\__init__.py:10
 msgid "Byro SEPA Direct Debit plugin"
 msgstr "Byro SEPA-Einzugs-Plugin"
 
-#: __init__.py:12
+#: .\byro_directdebit\__init__.py:12
 msgid ""
 "This plugin allows membership fees to be collected with SEPA direct debit"
 msgstr ""
 "Mit diesem Plugin können Mitgliedsbeiträge mit SEPA-Lastschrift eingezogen "
 "werden"
 
-#: default.py:5
+#: .\byro_directdebit\default.py:5
 msgid "SEPA Direct Debit mandate reference notification"
 msgstr "Mitteilung der SEPA-Kontoeinzugs-Mandatsreferenz"
 
-#: default.py:8
+#: .\byro_directdebit\default.py:8
 #, python-brace-format
 msgid ""
 "Hi,\n"
@@ -74,19 +74,75 @@ msgstr ""
 "Danke\n"
 "  der Robo-Schreiber"
 
-#: models.py:8
+#: .\byro_directdebit\default.py:30
+msgid "SEPA Direct Debit notification"
+msgstr "SEPA-Lastschriftbenachrichtigung"
+
+#: .\byro_directdebit\default.py:33
+#, python-brace-format
+msgid ""
+"Hi,\n"
+"        \n"
+"this is to inform you of the SEPA direct debit we'll be issuing based on\n"
+"the SEPA direct debit mandate you gave us for your {association_name}\n"
+"membership fees.\n"
+"\n"
+" Debit date:        {debit_date}\n"
+" Amount:            {amount}\n"
+"\n"
+" Mandate reference: {sepa_mandate_reference}\n"
+" Your IBAN on file: {sepa_iban}\n"
+" Your BIC:          {sepa_bic}\n"
+"\n"
+" Our Creditor ID:   {creditor_id}\n"
+"\n"
+"If you have any questions relating to your member fees or you want to "
+"update\n"
+"your member data, please contact us at {contact}.\n"
+"\n"
+"{additional_information}\n"
+"\n"
+"Thanks,\n"
+"the robo clerk"
+msgstr ""
+"Hallo\n"
+"        \n"
+"hiermit informieren wir dich über eine SEPA-Lastschrift, die wir auf der "
+"Grundlage\n"
+"das SEPA-Lastschriftmandat, das du uns für {association_name}-"
+"Mitgliedsbeiträge\n"
+"erteilt hast.\n"
+"\n"
+" Datum: {debit_date}\n"
+" Betrag: {amount}\n"
+"\n"
+" Mandatsreferenz: {sepa_mandate_reference}\n"
+" Deine IBAN: {sepa_iban}\n"
+" Deine BIC: {sepa_bic}\n"
+"\n"
+" Unsere Gläubiger-ID: {creditor_id}\n"
+"\n"
+"Wenn du Fragen zu deinen Mitgliedsbeiträgen oder -daten hast,\n"
+"kontaktiere uns bitte unter {contact}\n"
+"\n"
+"{additional_information}\n"
+"\n"
+"Danke\n"
+"der Robo-Schreiber"
+
+#: .\byro_directdebit\models.py:14
 msgid "SEPA Direct Debit settings"
 msgstr "SEPA-Lastschrifteinstellungen"
 
-#: models.py:13
+#: .\byro_directdebit\models.py:19
 msgid "SEPA Creditor ID"
 msgstr "SEPA-Gläubiger-ID"
 
-#: models.py:19
+#: .\byro_directdebit\models.py:25
 msgid "SEPA Direct Debit mandate reference prefix"
 msgstr "Präfix für SEPA-Kontoeinzugsmandatsreferenz"
 
-#: models.py:20 views.py:117
+#: .\byro_directdebit\models.py:26 .\byro_directdebit\views.py:147
 msgid ""
 "A short prefix that should be part of every assigned mandate reference to "
 "help the debtor identify the creditor. Good example: Short name of your "
@@ -96,44 +152,85 @@ msgstr ""
 "um dem Mitglied zu helfen, den Gläubiger zu identifizieren. Gutes Beispiel: "
 "Kurzname der Organisation (3-5 Zeichen)."
 
-#: signals.py:15
+#: .\byro_directdebit\models.py:64
+msgid "SEPA-XML file"
+msgstr "SEPA-XML-Datei"
+
+#: .\byro_directdebit\models.py:70 .\byro_directdebit\models.py:109
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: .\byro_directdebit\models.py:71
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+#: .\byro_directdebit\models.py:72 .\byro_directdebit\models.py:110
+msgid "Transmitted"
+msgstr "Übertragen"
+
+#: .\byro_directdebit\models.py:73 .\byro_directdebit\models.py:111
+msgid "Executed"
+msgstr "Durchgeführt"
+
+#: .\byro_directdebit\models.py:85
+msgid "First (Recurring)"
+msgstr "Erstmalig (Wiederkehrend)"
+
+#: .\byro_directdebit\models.py:86
+msgid "Reccurring"
+msgstr "Wiederkehrend"
+
+#: .\byro_directdebit\models.py:87
+msgid "Last (Recurring)"
+msgstr "Letztmalig (Wiederkehrend)"
+
+#: .\byro_directdebit\models.py:88
+msgid "One-off"
+msgstr "Einmalig"
+
+#: .\byro_directdebit\models.py:112
+msgid "Bounced"
+msgstr "Zurückgegangen"
+
+#: .\byro_directdebit\signals.py:15
 msgid "Direct debit"
 msgstr "Kontoeinzug"
 
-#: templates/byro_directdebit/assign_sepa_mandates.html:5
+#: .\byro_directdebit\templates\byro_directdebit\assign_sepa_mandates.html:5
 msgid "Assign SEPA direct debit mandate references"
 msgstr "Zuweisen von SEPA-Lastschriftmandatsreferenzen"
 
-#: templates/byro_directdebit/assign_sepa_mandates.html:11
+#: .\byro_directdebit\templates\byro_directdebit\assign_sepa_mandates.html:11
 msgid "SEPA Direct Debit Mandate Reference Properties"
 msgstr "Eigenschaften der Mandatsreferenz"
 
-#: templates/byro_directdebit/assign_sepa_mandates.html:15
+#: .\byro_directdebit\templates\byro_directdebit\assign_sepa_mandates.html:15
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:66
 msgid "Notification E-Mail"
 msgstr "Benachrichtigungs-E-Mail"
 
-#: templates/byro_directdebit/assign_sepa_mandates.html:22
+#: .\byro_directdebit\templates\byro_directdebit\assign_sepa_mandates.html:22
 #, python-format
 msgid "Assign %(n)s mandate reference"
 msgid_plural "Assign %(n)s mandate references"
 msgstr[0] "%(n)s Mandatsreferenz zuweisen"
 msgstr[1] "%(n)s Mandatsreferenzen zuweisen"
 
-#: templates/byro_directdebit/base.html:13
-#: templates/byro_directdebit/dashboard.html:4
+#: .\byro_directdebit\templates\byro_directdebit\base.html:13
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:4
 msgid "Dashboard"
 msgstr "Überblick"
 
-#: templates/byro_directdebit/base.html:21
-#: templates/byro_directdebit/list.html:4
+#: .\byro_directdebit\templates\byro_directdebit\base.html:21
+#: .\byro_directdebit\templates\byro_directdebit\list.html:4
 msgid "Member list"
 msgstr "Mitgliederliste"
 
-#: templates/byro_directdebit/dashboard.html:12
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:12
 msgid "Error: Creditor ID not set"
 msgstr "Fehler: Gläubigeridentifikationsnummer nicht festgelegt"
 
-#: templates/byro_directdebit/dashboard.html:15
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:15
 msgid ""
 "The SEPA Direct Debit creditor identifier must be set in the configuration, "
 "before the direct debit functions can be used."
@@ -141,109 +238,237 @@ msgstr ""
 "Die SEPA-Gläubigeridentifikationsnummer muss in der Konfiguration "
 "eingetragen werden, bevor die Lastschriftfunktionen verwendet werden können."
 
-#: templates/byro_directdebit/dashboard.html:16
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:16
 msgid "Go to configuration"
 msgstr "Zur Konfiguration"
 
-#: templates/byro_directdebit/dashboard.html:26
-#: templates/byro_directdebit/dashboard.html:38
-#: templates/byro_directdebit/dashboard.html:50
-#: templates/byro_directdebit/dashboard.html:62
-#: templates/byro_directdebit/dashboard.html:87
-#: templates/byro_directdebit/dashboard.html:101
-#: templates/byro_directdebit/dashboard.html:115
-#: templates/byro_directdebit/dashboard.html:129
-#: templates/byro_directdebit/dashboard.html:143
-#: templates/byro_directdebit/dashboard.html:157
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:26
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:38
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:50
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:62
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:87
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:101
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:115
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:129
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:143
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:157
 #, python-format
 msgid "%(n)s member"
 msgid_plural "%(n)s members"
 msgstr[0] "%(n)s Mitglied"
 msgstr[1] "%(n)s Mitglieder"
 
-#: templates/byro_directdebit/dashboard.html:33
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:33
 msgid "with paid memberships"
 msgstr "mit kostenpflichtigen Mitgliedschaften"
 
-#: templates/byro_directdebit/dashboard.html:45
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:45
 msgid "with due balance"
 msgstr "mit offenen Beträgen"
 
-#: templates/byro_directdebit/dashboard.html:57
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:57
 msgid "with deactivated direct debit"
 msgstr "mit deaktiviertem Lastschriftverfahren"
 
-#: templates/byro_directdebit/dashboard.html:69
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:69
 msgid "with due balance and correct SEPA direct debit information"
 msgstr "mit offenen Beträgen und korrekten SEPA-Lastschriftinformationen"
 
-#: templates/byro_directdebit/dashboard.html:75
-msgid "Issue direct debit &hellip;"
-msgstr "Einzug durchführen &hellip;"
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:75
+msgid "Prepare direct debit &hellip;"
+msgstr "Vorbereitung einer Lastschrift &hellip;"
 
-#: templates/byro_directdebit/dashboard.html:79
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:79
 msgid "Assign missing SEPA direct debit mandate references &hellip;"
 msgstr "Zuweisen fehlender SEPA-Lastschriftmandatsreferenzen &hellip;"
 
-#: templates/byro_directdebit/dashboard.html:94
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:94
 msgid "with missing IBAN"
 msgstr "mit fehlender IBAN"
 
-#: templates/byro_directdebit/dashboard.html:108
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:108
 msgid "with an invalid IBAN"
 msgstr "mit einer ungültigen IBAN"
 
-#: templates/byro_directdebit/dashboard.html:122
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:122
 msgid "with missing BIC"
 msgstr "mit fehlendem BIC"
 
-#: templates/byro_directdebit/dashboard.html:136
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:136
 msgid "where the direct debit mandate has been rescinded"
 msgstr "bei denen das Lastschriftmandat aufgehoben wurde"
 
-#: templates/byro_directdebit/dashboard.html:150
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:150
 msgid "where the direct debit bounced in the past and has been disabled"
 msgstr ""
 "bei denen die Lastschrift in der Vergangenheit zurückgegangen ist und "
 "deaktiviert wurde"
 
-#: templates/byro_directdebit/dashboard.html:164
+#: .\byro_directdebit\templates\byro_directdebit\dashboard.html:164
 msgid "which are missing a SEPA mandate reference"
 msgstr "denen eine SEPA-Mandatsreferenz fehlt"
 
-#: templates/byro_directdebit/list.html:11
+#: .\byro_directdebit\templates\byro_directdebit\list.html:11
 msgid "Direct Debit state"
 msgstr "Lastschriftzustand"
 
-#: templates/byro_directdebit/list.html:12
+#: .\byro_directdebit\templates\byro_directdebit\list.html:12
 msgid "Number"
 msgstr "Zahl"
 
-#: templates/byro_directdebit/list.html:13
+#: .\byro_directdebit\templates\byro_directdebit\list.html:13
 msgid "Name"
 msgstr "Name"
 
-#: templates/byro_directdebit/list.html:14
+#: .\byro_directdebit\templates\byro_directdebit\list.html:14
 msgid "Balance"
 msgstr "Kontostand"
 
-#: templates/byro_directdebit/list.html:15
+#: .\byro_directdebit\templates\byro_directdebit\list.html:15
 msgid "IBAN"
 msgstr "IBAN"
 
-#: templates/byro_directdebit/list.html:16
+#: .\byro_directdebit\templates\byro_directdebit\list.html:16
 msgid "BIC"
 msgstr "BIC"
 
-#: templates/byro_directdebit/list.html:17
+#: .\byro_directdebit\templates\byro_directdebit\list.html:17
 msgid "Mandate reference"
 msgstr "Mandatsreferenz"
 
-#: templates/byro_directdebit/list.html:43
+#: .\byro_directdebit\templates\byro_directdebit\list.html:43
 msgid "Mandate reference missing"
 msgstr "Mandatsreferenz fehlt"
 
-#: views.py:123
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:5
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:5
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:5
+msgid "Prepare and execute SEPA direct debit"
+msgstr "Vorbereiten und Ausführen einer SEPA-Lastschrift"
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:27
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:27
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:27
+msgid "Verify the member list and clean up data inconsistencies."
+msgstr ""
+"Überprüfen der Mitgliederliste und Bereinigen von Dateninkonsistenzen."
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:31
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:31
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:31
+msgid "Step 1: Verify member data"
+msgstr "Schritt 1: Überprüfen der Mitgliedsdaten"
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:35
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:35
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:35
+msgid "Select debit date and provide a notification mail template."
+msgstr ""
+"Wählen Sie das Solldatum aus, und schreiben Sie eine Vorlage für die "
+"Benachrichtigungsmail."
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:39
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:39
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:39
+msgid "Step 2: Prepare debit"
+msgstr "Schritt 2: Vorbereiten des Einzugs"
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:43
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:43
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:43
+msgid "Transmit the direct debit order to your bank."
+msgstr "Übertragung des Lastschriftauftrags an Ihre Bank."
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:47
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:47
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:47
+msgid "Step 3: Transmit to bank"
+msgstr "Schritt 3: Senden an die Bank"
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:51
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:51
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:51
+msgid "Authorize the order by entering a TAN."
+msgstr "Autorisierung des Auftrags durch Eingabe einer TAN."
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:55
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:55
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:55
+msgid "Step 4: Confirm execution"
+msgstr "Schritt 4: Ausführung bestätigen"
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:61
+msgid "SEPA Direct Debit Properties"
+msgstr "SEPA-Lastschrifteigenschaften"
+
+#: .\byro_directdebit\templates\byro_directdebit\prepare_dd.html:73
+#, python-format
+msgid "Execute %(n)s direct debit"
+msgid_plural "Execute %(n)s direct debits"
+msgstr[0] "Ausführen von %(n)s Lastschrift"
+msgstr[1] "Ausführen von %(n)s Lastschriften"
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:60
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:60
+msgid "Notification e-mails pending"
+msgstr "Benachrichtigungs-E-Mails ausstehend"
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:62
+msgid ""
+"Notification e-mails have been placed into the e-mail outbox, but were not "
+"sent automatically. Please visit the outbox and send the notifications as "
+"is, or edit them before sending. You can do this now (in a new window), or "
+"after transmitting the direct debit order to your bank."
+msgstr ""
+"Benachrichtigungs-E-Mails wurden in den E-Mail-Ausgang gelegt, aber nicht "
+"automatisch gesendet. Bitte besuchen Sie den Postausgang und senden Sie die "
+"Benachrichtigungen, oder bearbeiten Sie sie vor dem Senden. Sie können dies "
+"jetzt tun (in einem neuen Fenster) oder nach der Übermittlung des "
+"Lastschriftauftrags an Ihre Bank."
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:67
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:67
+msgid "Outbox (new window)"
+msgstr "Postausgang (neues Fenster)"
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:74
+msgid "PIN request"
+msgstr "PIN-Abfrage"
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd.html:89
+msgid "Transmit"
+msgstr "Übertragen"
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:62
+msgid ""
+"Notification e-mails have been placed into the e-mail outbox, but were not "
+"sent automatically. Please visit the outbox and send the notifications as "
+"is, or edit them before sending. You can do this now (in a new window), or "
+"after authorizing the direct debit order with your bank."
+msgstr ""
+"Benachrichtigungs-E-Mails wurden in den E-Mail-Ausgang eingefügt, aber "
+"nicht automatisch gesendet. Bitte besuchen Sie den Postausgang und senden "
+"Sie die Benachrichtigungen, oder bearbeiten Sie sie vor dem Senden. Sie "
+"können dies jetzt tun (in einem neuen Fenster) oder nach der Autorisierung "
+"des Lastschriftauftrags mit Ihrer Bank."
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:74
+msgid "TAN request"
+msgstr "TAN-Anforderung"
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:76
+msgid ""
+"Please follow the instructions given by your bank and enter the resulting "
+"TAN below."
+msgstr ""
+"Bitte folgen Sie den Anweisungen Ihrer Bank und geben Sie die resultierende "
+"TAN unten ein."
+
+#: .\byro_directdebit\templates\byro_directdebit\transmit_dd_tan.html:88
+msgid "Authorize"
+msgstr "Autorisieren"
+
+#: .\byro_directdebit\views.py:153
 msgid ""
 "Length of the generated SEPA direct debit mandate references (including the "
 "prefix)."
@@ -251,7 +476,7 @@ msgstr ""
 "Länge der generierten SEPA-Lastschriftmandatsreferenzen (einschließlich des "
 "Präfixes)."
 
-#: views.py:253
+#: .\byro_directdebit\views.py:283
 #, python-format
 msgid ""
 "Assigned %(n)s mandate reference. Check the e-mail outbox for the "
@@ -266,13 +491,95 @@ msgstr[1] ""
 "%(n)s Mandatsreferenzen zugewiesen. Schauen Sie in den E-Mail-Ausgang für "
 "die Benachrichtigungsmails."
 
-#: views.py:265
+#: .\byro_directdebit\views.py:295
 #, python-format
 msgid "%(n)s mandate reference could not be assigned."
 msgid_plural "%(n)s mandate references could not be assigned."
 msgstr[0] "%(n)s Mandatsreferenz konnte nicht zugewiesen werden."
 msgstr[1] "%(n)s Mandatsreferenzen konnten nicht zugewiesen werden."
 
-#: views.py:276
+#: .\byro_directdebit\views.py:306
 msgid "Nothing to do. Nothing done."
 msgstr "Nichts zu tun. Nichts getan."
+
+#: .\byro_directdebit\views.py:313
+msgid "Debit date"
+msgstr "Einzugsdatum"
+
+#: .\byro_directdebit\views.py:314
+msgid ""
+"Date on which the debit should become effective. Warning: There are likely "
+"to be contractual limitations concerning this date between you and your "
+"bank. Generally should be 14 days in the future, on a bank day, not more "
+"than 30 days in the future."
+msgstr ""
+"Datum, an dem der Einzug wirksam werden soll. Achtung: Es gibt vermutlich "
+"vertragliche Beschränkungen in Bezug auf dieses Datum zwischen Ihnen und "
+"Ihrer Bank. In der Regel sollte das Datum 14 Tage in der Zukunft liegen, an "
+"einem Bankarbeitstag, nicht mehr als 30 Tage in der Zukunft."
+
+#: .\byro_directdebit\views.py:318
+msgid "Memo"
+msgstr "Betreff"
+
+#: .\byro_directdebit\views.py:318
+msgid "Memo/subject that the member will see on their bank statement."
+msgstr ""
+"Betreff/Überweisungsnotiz, die das Mitglied auf seinem Kontoauszug sehen "
+"wird."
+
+#: .\byro_directdebit\views.py:321
+msgid "Creditor name"
+msgstr "Gläubigername"
+
+#: .\byro_directdebit\views.py:322
+msgid "Creditor IBAN"
+msgstr "Gläubiger-IBAN"
+
+#: .\byro_directdebit\views.py:323
+msgid "Creditor BIC"
+msgstr "Gläubiger-BIC"
+
+#: .\byro_directdebit\views.py:324
+msgid "SEPA PAIN format"
+msgstr "SEPA PAIN-Format"
+
+#: .\byro_directdebit\views.py:327
+msgid "Issue express debit (COR1)"
+msgstr "Expresslastschrift (COR1)"
+
+#: .\byro_directdebit\views.py:329
+msgid ""
+"An express debit has a reduced lead time of generally 1 business day, but "
+"must be explicitly agreed upon when giving the SEPA mandate."
+msgstr ""
+"Eine Expresslastschrift hat eine reduzierte Vorlaufzeit von, in der Regel, "
+"1 Werktag, muss aber bei der Erteilung des SEPA-Mandats ausdrücklich "
+"vereinbart werden."
+
+#: .\byro_directdebit\views.py:427
+#, python-format
+msgid "Membership fees for %(organization_name)s"
+msgstr "Mitgliedsbeiträge für %(organization_name)s"
+
+#: .\byro_directdebit\views.py:441
+msgid "No common supported SEPA PAIN format"
+msgstr "Kein gemeinsames unterstütztes SEPA PAIN-Format"
+
+#: .\byro_directdebit\views.py:447
+msgid "No supported SEPA PAIN format"
+msgstr "Kein unterstütztes SEPA PAIN-Format"
+
+#: .\byro_directdebit\views.py:620 .\byro_directdebit\views.py:671
+msgid "Invalid response: {}"
+msgstr "Ungültige Antwort: {}"
+
+#: .\byro_directdebit\views.py:624 .\byro_directdebit\views.py:677
+msgid "An error occurred, please see server log for more information"
+msgstr ""
+"Ein Fehler ist aufgetreten, weitere Informationen finden Sie im "
+"Serverprotokoll"
+
+#: .\byro_directdebit\views.py:667
+msgid "Successfully authorized the direct debit with your bank"
+msgstr "Lastschrift erfolgreich bei Ihrer Bank autorisiert"
