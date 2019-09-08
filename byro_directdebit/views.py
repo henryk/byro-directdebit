@@ -605,7 +605,7 @@ class TransmitDDView(FinTSInterfaceMixin, SingleObjectMixin, TemplateResponseMix
                     )
 
                     if isinstance(response, TransactionResponse):
-                        self._show_transaction_messages(response)
+                        self.fints_interface._show_transaction_messages(response)
                         if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.completed',
                                         response_status=response.status,
                                         response_messages=response.responses,
@@ -663,7 +663,7 @@ class TransmitDDTANView(FinTSInterfaceMixin, SingleObjectMixin, TemplateResponse
                                         response_messages=response.responses,
                                         response_data=response.data,
                                         uuid=self.kwargs['transfer_uuid'])
-                        self._show_transaction_messages(response)
+                        self.fints_interface._show_transaction_messages(response)
                         messages.success(self.request, _("Successfully authorized the direct debit with your bank"))
                         self.object.state = DirectDebitState.TRANSMITTED.value
                     else:
