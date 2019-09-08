@@ -48,6 +48,7 @@ SUPPORTED_PAIN_FORMATS = [
 ]
 
 logger = logging.getLogger(__name__)
+DISABLE_AUDITLOGGING = True
 
 class MemberList(ListView):
     template_name = 'byro_directdebit/list.html'
@@ -605,20 +606,20 @@ class TransmitDDView(FinTSInterfaceMixin, SingleObjectMixin, TemplateResponseMix
 
                     if isinstance(response, TransactionResponse):
                         self._show_transaction_messages(response)
-                        self.object.log(self, '.transmitdd.completed',
+                        if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.completed',
                                         response_status=response.status,
                                         response_messages=response.responses,
                                         response_data=response.data)
                     elif isinstance(response, str):
-                        self.object.log(self, '.transmitdd.started',
+                        if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.started',
                                           uuid=response)
                         return HttpResponseRedirect(reverse('plugins:byro_directdebit:finance.directdebit.transmit_dd.tan_request',
                                                             kwargs={'pk': self.object.pk, 'transfer_uuid': response}))
                     else:
-                        self.object.log(self, '.transmitdd.internal_error')
+                        if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.internal_error')
                         messages.error(self.request, _("Invalid response: {}".format(response)))
                 except:
-                    self.object.log(self, '.transmitdd.internal_error')
+                    if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.internal_error')
                     logger.exception("Internal error when transmitting SEPA-XML")
                     messages.error(self.request, _("An error occurred, please see server log for more information"))
 
@@ -657,7 +658,7 @@ class TransmitDDTANView(FinTSInterfaceMixin, SingleObjectMixin, TemplateResponse
                         self.kwargs['transfer_uuid'],
                     )
                     if isinstance(response, TransactionResponse):
-                        self.object.log(self, '.transmitdd.completed',
+                        if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.completed',
                                         response_status=response.status,
                                         response_messages=response.responses,
                                         response_data=response.data,
@@ -666,11 +667,11 @@ class TransmitDDTANView(FinTSInterfaceMixin, SingleObjectMixin, TemplateResponse
                         messages.success(self.request, _("Successfully authorized the direct debit with your bank"))
                         self.object.state = DirectDebitState.TRANSMITTED
                     else:
-                        self.object.log(self, '.transmitdd.internal_error', uuid=self.kwargs['transfer_uuid'])
+                        if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.internal_error', uuid=self.kwargs['transfer_uuid'])
                         messages.error(self.request, _("Invalid response: {}".format(response)))
                         self.object.state = DirectDebitState.FAILED
                 except:
-                    self.object.log(self, '.transmitdd.internal_error', uuid=self.kwargs['transfer_uuid'])
+                    if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.internal_error', uuid=self.kwargs['transfer_uuid'])
                     logger.exception("Internal error when transmitting TAN")
                     self.object.state = DirectDebitState.FAILED
                     messages.error(self.request, _("An error occurred, please see server log for more information"))
