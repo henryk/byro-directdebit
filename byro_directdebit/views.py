@@ -665,15 +665,15 @@ class TransmitDDTANView(FinTSInterfaceMixin, SingleObjectMixin, TemplateResponse
                                         uuid=self.kwargs['transfer_uuid'])
                         self._show_transaction_messages(response)
                         messages.success(self.request, _("Successfully authorized the direct debit with your bank"))
-                        self.object.state = DirectDebitState.TRANSMITTED
+                        self.object.state = DirectDebitState.TRANSMITTED.value
                     else:
                         if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.internal_error', uuid=self.kwargs['transfer_uuid'])
                         messages.error(self.request, _("Invalid response: {}".format(response)))
-                        self.object.state = DirectDebitState.FAILED
+                        self.object.state = DirectDebitState.FAILED.value
                 except:
                     if not DISABLE_AUDITLOGGING: self.object.log(self, '.transmitdd.internal_error', uuid=self.kwargs['transfer_uuid'])
                     logger.exception("Internal error when transmitting TAN")
-                    self.object.state = DirectDebitState.FAILED
+                    self.object.state = DirectDebitState.FAILED.value
                     messages.error(self.request, _("An error occurred, please see server log for more information"))
                 self.object.save(update_fields=["state"])
 
