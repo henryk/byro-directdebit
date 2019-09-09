@@ -123,6 +123,20 @@
         </span>
     </a>
     {% endif %}
+    {% if invalid_bic %}
+    <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=invalid_bic">
+        <h1>
+            {% blocktrans trimmed count n=invalid_bic %}
+            {{ n }} member
+            {% plural %}
+            {{ n }} members
+            {% endblocktrans %}
+        </h1>
+        <span class="dashboard-description">
+            {% trans "with invalid BIC" %}
+        </span>
+    </a>
+    {% endif %}
     {% if rescinded %}
     <a class="dashboard-block block-danger" href="{% url "plugins:byro_directdebit:finance.directdebit.list" %}?filter=rescinded">
         <h1>

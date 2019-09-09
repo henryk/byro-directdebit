@@ -70,6 +70,9 @@ class MemberList(ListView):
         if mode == 'invalid_iban':
             return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.INVALID_IBAN]
 
+        elif mode == 'invalid_bic':
+            return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.INVALID_BIC]
+
         elif mode == 'rescinded':
             return [m for m in all_members if m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.RESCINDED]
 
@@ -132,6 +135,7 @@ class Dashboard(TemplateView):
             'eligible': w_due_counts[SepaDirectDebitState.OK],
             'invalid_iban': counts[SepaDirectDebitState.INVALID_IBAN],
             'no_bic': counts[SepaDirectDebitState.NO_BIC],
+            'invalid_bic': counts[SepaDirectDebitState.INVALID_BIC],
             'rescinded': counts[SepaDirectDebitState.RESCINDED],
             'bounced': counts[SepaDirectDebitState.BOUNCED],
             'no_mandate_reference': counts[SepaDirectDebitState.NO_MANDATE_REFERENCE],
