@@ -11,7 +11,7 @@ class PluginApp(AppConfig):
         author = 'Henryk Plötz'
         description = ugettext_lazy('This plugin allows membership fees to be collected with SEPA direct debit')
         visible = True
-        version = '0.0.1'
+        version = '0.0.3'
 
     def ready(self):
         from . import signals  # NOQA
