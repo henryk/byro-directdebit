@@ -335,6 +335,14 @@ class PrepareDDForm(forms.Form):
                                           "but must be explicitly agreed upon "
                                           "when giving the SEPA mandate."))
 
+    exp_bank_types = forms.ChoiceField(required=True, label=_("Bank types"),
+                                   choices=[('ALL', _('All banks')),
+                                            ('DE', _('German banks only')),
+                                            ('NDE', _('Non-German banks only'))])
+    exp_member_numbers = forms.CharField(required=False, label=_("Member numbers"),
+                                         help_text=_("Allows to issue a direct debit for a subset of members only. "
+                                                     "Example: 1-9,20-29,42"))
+
     subject = forms.CharField(required=True)
     text = forms.CharField(widget=forms.Textarea)
 
@@ -492,6 +500,11 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
         }
         sepa = SepaDD(dd_config, schema=form.cleaned_data['sepa_format'], clean=True)
 
+        exp_member_numbers = [
+            ( (int(x.split("-")[0]), int(x.split("-")[1])) if "-" in x else (int(x),int(x)) )
+            for x in form.cleaned_data['exp_member_numbers'].split(",")
+        ]
+
         with atomic():
             debit = DirectDebit(
                 datetime=now_,
@@ -507,6 +520,18 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
             debit_payments = []
 
             for member in members:
+                ## Experimental gates
+                if form.cleaned_data['exp_bank_types'] == "DE":
+                    if not member.profile_sepa.iban.upper().startswith("DE"):
+                        continue
+                elif form.cleaned_data['exp_bank_types'] == "NDE":
+                    if member.profile_sepa.iban.upper().startswith("DE"):
+                        continue
+
+                if exp_member_numbers:
+                    if not any(a <= int(member.number) <= b for (a, b) in exp_member_numbers):
+                        continue
+
                 debit_payment = DirectDebitPayment(
                     id = uuid4(),
                     type = 'FRST', ## FIXME Based on existing data

@@ -59,7 +59,15 @@
         {% csrf_token %}
         <div class="card mb-2">
             <div class="card-header"><h4>{% trans "SEPA Direct Debit Properties" %}</h4></div>
-            <div class="card-body">{% bootstrap_form form layout='horizontal' exclude='subject,text' %}</div>
+            <div class="card-body">{% bootstrap_form form layout='horizontal' exclude='subject,text,exp_bank_types,exp_member_numbers' %}</div>
+        </div>
+
+        <div class="card mb-2">
+            <div class="card-header"><h4>{% trans "Experimental Options" %}</h4></div>
+            <div class="card-body">
+                {% bootstrap_field form.exp_bank_types layout='horizontal' %}
+                {% bootstrap_field form.exp_member_numbers layout='horizontal' %}
+            </div>
         </div>
 
         <div class="card mb-2">
