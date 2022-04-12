@@ -3,7 +3,6 @@ from enum import Enum
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.postgres.fields import JSONField
 from django.utils.timezone import now
 
 from byro.common.models.configuration import ByroConfiguration
@@ -75,7 +74,7 @@ class DirectDebit(models.Model, LogTargetMixin):
         default=DirectDebitState.UNKNOWN.value, max_length=11, blank=False, null=False,
     )
 
-    additional_data = JSONField(default=dict)
+    additional_data = models.JSONField(default=dict)
 
 
 class DirectDebitPayment(models.Model):
