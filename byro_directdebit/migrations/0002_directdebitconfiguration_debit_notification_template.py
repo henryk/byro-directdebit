@@ -6,8 +6,11 @@ import django.db.models.deletion
 
 def init_templates(apps, schema_editor):
     from byro_directdebit import default
-    MailTemplate = apps.get_model('mails', 'MailTemplate')
-    DirectDebitConfiguration = apps.get_model('byro_directdebit', 'DirectDebitConfiguration')
+
+    MailTemplate = apps.get_model("mails", "MailTemplate")
+    DirectDebitConfiguration = apps.get_model(
+        "byro_directdebit", "DirectDebitConfiguration"
+    )
     config, _ = DirectDebitConfiguration.objects.get_or_create()
     if not config.debit_notification_template:
         debit_notification = MailTemplate.objects.create(
@@ -17,18 +20,24 @@ def init_templates(apps, schema_editor):
         config.debit_notification_template = debit_notification
     config.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mails', '0008_email_balance'),
-        ('byro_directdebit', '0001_initial'),
+        ("mails", "0008_email_balance"),
+        ("byro_directdebit", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='directdebitconfiguration',
-            name='debit_notification_template',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='mails.MailTemplate'),
+            model_name="directdebitconfiguration",
+            name="debit_notification_template",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="mails.MailTemplate",
+            ),
         ),
         migrations.RunPython(init_templates, migrations.RunPython.noop),
     ]

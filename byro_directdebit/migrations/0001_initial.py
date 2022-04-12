@@ -7,8 +7,11 @@ import django.db.models.deletion
 
 def init_templates(apps, schema_editor):
     from byro_directdebit import default
-    MailTemplate = apps.get_model('mails', 'MailTemplate')
-    DirectDebitConfiguration = apps.get_model('byro_directdebit', 'DirectDebitConfiguration')
+
+    MailTemplate = apps.get_model("mails", "MailTemplate")
+    DirectDebitConfiguration = apps.get_model(
+        "byro_directdebit", "DirectDebitConfiguration"
+    )
     config, _ = DirectDebitConfiguration.objects.get_or_create()
     if not config.mandate_reference_notification_template:
         mandate_reference_notification = MailTemplate.objects.create(
@@ -19,28 +22,59 @@ def init_templates(apps, schema_editor):
     config.save()
 
 
-
-
-
 class Migration(migrations.Migration):
 
     initial = True
 
     dependencies = [
-        ('mails', '0008_email_balance'),
+        ("mails", "0008_email_balance"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DirectDebitConfiguration',
+            name="DirectDebitConfiguration",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('creditor_id', models.CharField(blank=True, max_length=35, null=True, verbose_name='SEPA Creditor ID')),
-                ('mandate_reference_prefix', models.CharField(blank=True, help_text='A short prefix that should be part of every assigned mandate reference to help the debtor identify the creditor. Good example: Short name of your organization (3-5 characters).', max_length=35, null=True, verbose_name='SEPA Direct Debit mandate reference prefix')),
-                ('mandate_reference_notification_template', models.ForeignKey(blank=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='mails.MailTemplate')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "creditor_id",
+                    models.CharField(
+                        blank=True,
+                        max_length=35,
+                        null=True,
+                        verbose_name="SEPA Creditor ID",
+                    ),
+                ),
+                (
+                    "mandate_reference_prefix",
+                    models.CharField(
+                        blank=True,
+                        help_text="A short prefix that should be part of every assigned mandate reference to help the debtor identify the creditor. Good example: Short name of your organization (3-5 characters).",
+                        max_length=35,
+                        null=True,
+                        verbose_name="SEPA Direct Debit mandate reference prefix",
+                    ),
+                ),
+                (
+                    "mandate_reference_notification_template",
+                    models.ForeignKey(
+                        blank=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="mails.MailTemplate",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
             bases=(byro.common.models.log.LogTargetMixin, models.Model),
         ),

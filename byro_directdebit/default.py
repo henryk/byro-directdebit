@@ -2,10 +2,12 @@ from i18nfield.strings import LazyI18nString
 from django.utils.translation import ugettext_lazy as _
 
 
-MANDATE_REFERENCE_NOTIFICATION_SUBJECT = LazyI18nString.from_gettext(_('SEPA Direct Debit mandate reference notification'))
+MANDATE_REFERENCE_NOTIFICATION_SUBJECT = LazyI18nString.from_gettext(
+    _("SEPA Direct Debit mandate reference notification")
+)
 MANDATE_REFERENCE_NOTIFICATION_TEXT = LazyI18nString.from_gettext(
     _(
-        '''Hi,
+        """Hi,
 
 this is to inform you of the SEPA mandate reference we will be using in the
 future to issue direct debits for your {association_name} membership fees.
@@ -22,15 +24,16 @@ your member data, please contact us at {contact}.
 {additional_information}
 
 Thanks,
-the robo clerk'''
+the robo clerk"""
     )
 )
 
 DEBIT_NOTIFICATION_SUBJECT = LazyI18nString.from_gettext(
-    _('SEPA Direct Debit notification'))
+    _("SEPA Direct Debit notification")
+)
 DEBIT_NOTIFICATION_TEXT = LazyI18nString.from_gettext(
     _(
-        '''Hi,
+        """Hi,
         
 this is to inform you of the SEPA direct debit we'll be issuing based on
 the SEPA direct debit mandate you gave us for your {association_name}
@@ -51,6 +54,6 @@ your member data, please contact us at {contact}.
 {additional_information}
 
 Thanks,
-the robo clerk'''
+the robo clerk"""
     )
 )
