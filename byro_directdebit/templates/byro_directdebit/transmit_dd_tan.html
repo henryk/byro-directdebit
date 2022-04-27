@@ -77,7 +77,7 @@
                     Please follow the instructions given by your bank and enter the resulting TAN below.
                 {% endblocktrans %}</p>
             </div>
-            {% include tan_template %}
+            {% include "byro_fints/snippet_tan_request.html" %}
             <div class="card-body">
                 {% for field in tan_form %}
                 {% bootstrap_field field layout='horizontal' %}

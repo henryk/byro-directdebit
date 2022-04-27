@@ -1,7 +1,9 @@
 from collections import Counter
 import logging
 import string
+from typing import Optional, Set, Dict
 
+import django.http
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.base import TemplateResponseMixin, View
@@ -38,17 +40,15 @@ from byro_directdebit.models import (
 )
 from byro_directdebit.utils import next_debit_date
 
-
-try:
-    from byro_fints.plugin_interface import FinTSInterface
-    from fints.client import (
-        FinTSOperations,
-        NeedTANResponse,
-        TransactionResponse,
-        ResponseStatus,
-    )
-except ImportError:
-    FinTSInterface = None
+from byro_fints.plugin_interface import FinTSPluginInterface, SepaDDFinTSHelper
+from byro_fints.fints_interface import with_fints
+from byro_fints.forms import PinRequestForm
+from fints.client import (
+    FinTSOperations,
+    NeedTANResponse,
+    TransactionResponse,
+    ResponseStatus,
+)
 
 SUPPORTED_PAIN_FORMATS = [
     # "pain.001.001.03",
@@ -75,9 +75,9 @@ class MemberList(ListView):
                 Q(memberships__amount__gt=0)
                 | Q(bookings__debit_account=SpecialAccounts.fees_receivable)
             )
-            .order_by("-id")
-            .distinct()
-            .all()
+                .order_by("-id")
+                .distinct()
+                .all()
         )
 
         if mode == "all":
@@ -88,7 +88,7 @@ class MemberList(ListView):
                 m
                 for m in all_members
                 if m.profile_sepa.sepa_direct_debit_state
-                == SepaDirectDebitState.INVALID_IBAN
+                   == SepaDirectDebitState.INVALID_IBAN
             ]
 
         elif mode == "invalid_bic":
@@ -96,7 +96,7 @@ class MemberList(ListView):
                 m
                 for m in all_members
                 if m.profile_sepa.sepa_direct_debit_state
-                == SepaDirectDebitState.INVALID_BIC
+                   == SepaDirectDebitState.INVALID_BIC
             ]
 
         elif mode == "rescinded":
@@ -104,7 +104,7 @@ class MemberList(ListView):
                 m
                 for m in all_members
                 if m.profile_sepa.sepa_direct_debit_state
-                == SepaDirectDebitState.RESCINDED
+                   == SepaDirectDebitState.RESCINDED
             ]
 
         elif mode == "bounced":
@@ -112,7 +112,7 @@ class MemberList(ListView):
                 m
                 for m in all_members
                 if m.profile_sepa.sepa_direct_debit_state
-                == SepaDirectDebitState.BOUNCED
+                   == SepaDirectDebitState.BOUNCED
             ]
 
         elif mode == "no_bic":
@@ -127,7 +127,7 @@ class MemberList(ListView):
                 m
                 for m in all_members
                 if m.profile_sepa.sepa_direct_debit_state
-                == SepaDirectDebitState.NO_IBAN
+                   == SepaDirectDebitState.NO_IBAN
             ]
 
         elif mode == "no_mandate_reference":
@@ -135,7 +135,7 @@ class MemberList(ListView):
                 m
                 for m in all_members
                 if m.profile_sepa.sepa_direct_debit_state
-                == SepaDirectDebitState.NO_MANDATE_REFERENCE
+                   == SepaDirectDebitState.NO_MANDATE_REFERENCE
             ]
 
         with_due_balance = [member for member in all_members if member.balance < 0]
@@ -148,7 +148,7 @@ class MemberList(ListView):
                 m
                 for m in with_due_balance
                 if m.profile_sepa.sepa_direct_debit_state
-                == SepaDirectDebitState.INACTIVE
+                   == SepaDirectDebitState.INACTIVE
             ]
 
         elif mode == "eligible":
@@ -174,9 +174,9 @@ class Dashboard(TemplateView):
                 Q(memberships__amount__gt=0)
                 | Q(bookings__debit_account=SpecialAccounts.fees_receivable)
             )
-            .order_by("-id")
-            .distinct()
-            .all()
+                .order_by("-id")
+                .distinct()
+                .all()
         )
 
         with_due_balance = {member for member in all_members if member.balance < 0}
@@ -213,7 +213,8 @@ class AssignSepaMandatesForm(forms.Form):
         max_length=35,
         required=False,
         help_text=_(
-            "A short prefix that should be part of every assigned mandate reference to help the debtor identify the creditor. Good example: Short name of your organization (3-5 characters)."
+            "A short prefix that should be part of every assigned mandate reference to help the debtor identify the "
+            "creditor. Good example: Short name of your organization (3-5 characters). "
         ),
     )
     length = forms.IntegerField(
@@ -241,23 +242,23 @@ class AssignSepaMandatesView(FormView):
                 Q(memberships__amount__gt=0)
                 | Q(bookings__debit_account=SpecialAccounts.fees_receivable)
             )
-            .order_by("-id")
-            .distinct()
-            .all()
+                .order_by("-id")
+                .distinct()
+                .all()
         )
 
         return [
             m
             for m in all_members
             if m.profile_sepa.sepa_direct_debit_state
-            == SepaDirectDebitState.NO_MANDATE_REFERENCE
+               == SepaDirectDebitState.NO_MANDATE_REFERENCE
         ]
 
     @staticmethod
     def _find_unused_mandate_reference(prefix, length, member, now_=None):
         now_ = now_ or now()
 
-        allowed_chars = [x for x in string.ascii_uppercase if not x in "XBGIOQSZ"]
+        allowed_chars = [x for x in string.ascii_uppercase if x not in "XBGIOQSZ"]
         format_string = "{}{:04d}{}{}"
 
         member_number = member.number or "0"
@@ -266,6 +267,8 @@ class AssignSepaMandatesView(FormView):
             if member_number.isdigit()
             else "X{}".format(member_number)
         )
+
+        mandate_reference: Optional[str] = None
 
         for i in range(3):
             format_params = [prefix, now_.year, "", formatted_number]
@@ -281,12 +284,15 @@ class AssignSepaMandatesView(FormView):
             mandate_reference = format_string.format(*format_params).upper()
 
             if Member.objects.filter(
-                profile_sepa__mandate_reference=mandate_reference
-            ).count():
+                    profile_sepa__mandate_reference=mandate_reference
+            ).exists():
                 mandate_reference = None
                 continue
             else:
                 break
+
+        if mandate_reference is None:
+            raise Exception("Cannot assign mandate reference")
 
         return mandate_reference
 
@@ -409,7 +415,7 @@ class PrepareDDForm(forms.Form):
     sepa_format = forms.CharField(
         required=True, label=_("SEPA PAIN format"), initial="pain.001.001.03"
     )
-    own_account = forms.CharField(required=False, widget=forms.HiddenInput())
+    user_login_pk = forms.CharField(required=False, widget=forms.HiddenInput())
 
     cor1 = forms.BooleanField(
         label=_("Issue express debit (COR1)"),
@@ -447,63 +453,72 @@ class PrepareDDForm(forms.Form):
 
 
 class FinTSInterfaceMixin:
+    fints_interface: Optional[FinTSPluginInterface]
+    request: django.http.HttpRequest
+
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
-        if FinTSInterface:
-            self.fints_interface = FinTSInterface.with_request(self.request)
+        if FinTSPluginInterface:
+            self.fints_interface = FinTSPluginInterface.with_request(self.request)
         else:
             self.fints_interface = None
+
+
+PainFormat = str
+UserLoginPk = int
 
 
 class PrepareDDView(FinTSInterfaceMixin, FormView):
     template_name = "byro_directdebit/prepare_dd.html"
     form_class = PrepareDDForm
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.do_cor1: bool = False
+        self.selected_account_user_login_pk: Optional[UserLoginPk] = None
+        self.selected_sepa_pain_formats: Optional[Set[PainFormat]] = None
+        self.bank_connections: Dict[UserLoginPk, dict] = {}
+        self.selected_account: Optional[IBAN] = None
+
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
 
-        all_accounts = []
         capable_accounts = []
 
-        self.selected_sepa_pain_formats = None
-        self.do_cor1 = False
-        self.selected_account = None
-        self.selected_account_login_pk = None
-        self.bank_connections = []
-
-        fallback_account = None
-        fallback_login_pk = None
+        fallback_account: Optional[IBAN] = None
+        fallback_user_login_pk: Optional[UserLoginPk] = None
 
         if self.fints_interface:
             connections = self.fints_interface.get_bank_connections()
-            for login_pk, connection in connections.items():
+            for user_login_pk, connection in connections.items():
                 for account in connection.get("accounts", []):
                     if "iban" in account and account["iban"]:
                         iban = IBAN(account["iban"])
 
                         if (
-                            not fallback_account
+                                not fallback_account
                         ):  # Randomly select the first one as fallback
                             fallback_account = iban
-                            fallback_login_pk = login_pk
+                            fallback_user_login_pk = user_login_pk
 
                         if (
-                            account["supported_operations"][
-                                FinTSOperations.SEPA_DEBIT_MULTIPLE
-                            ]
-                            or account["supported_operations"][
-                                FinTSOperations.SEPA_DEBIT_MULTIPLE_COR1
-                            ]
+                                account["supported_operations"][
+                                    FinTSOperations.SEPA_DEBIT_MULTIPLE
+                                ]
+                                or account["supported_operations"][
+                            FinTSOperations.SEPA_DEBIT_MULTIPLE_COR1
+                        ]
                         ):
 
                             capable_accounts.append(iban)
 
                             if not self.selected_account:
                                 self.selected_account = iban
-                                self.selected_account_login_pk = login_pk
+                                self.selected_account_user_login_pk = user_login_pk
 
                                 if connection.get("bank", {}).get(
-                                    "supported_formats", {}
+                                        "supported_formats", {}
                                 ):
                                     sup_mul = connection["bank"][
                                         "supported_formats"
@@ -522,13 +537,13 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
                                         self.do_cor1 = True
                                     else:
                                         self.selected_account = None
-                                        self.selected_account_login_pk = None
+                                        self.selected_account_user_login_pk = None
 
             self.bank_connections = connections
 
         if self.selected_sepa_pain_formats:
             self.selected_sepa_pain_formats = set(
-                (e[:-4] if e.lower().endswith(".xml") else e).rsplit(":", 1)[-1]
+                (e[:-4] if e.lower().endswith(".xsd") else e).rsplit(":", 1)[-1]
                 for e in self.selected_sepa_pain_formats
             )
 
@@ -536,13 +551,7 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
             messages.warning(self.request, "No account with DEBIT capability found")
             if fallback_account:
                 self.selected_account = fallback_account
-                self.selected_account_login_pk = fallback_login_pk
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.bank_connections = []
-        self.selected_account = None
+                self.selected_account_user_login_pk = fallback_user_login_pk
 
     def get_initial(self):
         config = DirectDebitConfiguration.get_solo()
@@ -559,25 +568,25 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
         retval["own_name"] = global_config.name
         retval["subject"] = config.debit_notification_template.subject
         retval["text"] = config.debit_notification_template.text
-        retval["own_account"] = self.selected_account_login_pk
+        retval["user_login_pk"] = self.selected_account_user_login_pk
 
         if self.do_cor1:
             retval["cor1"] = True
 
         if self.selected_sepa_pain_formats:
-            l = list(
+            sepa_formats = list(
                 e.lower()
                 for e in self.selected_sepa_pain_formats
                 if e.lower() in SUPPORTED_PAIN_FORMATS
             )
-            if not l:
+            if not sepa_formats:
                 messages.warning(
                     self.request, _("No common supported SEPA PAIN format")
                 )
-                l = self.selected_sepa_pain_formats
-            if l:
-                l.sort()
-                retval["sepa_format"] = l[-1]
+                sepa_formats = list(self.selected_sepa_pain_formats)
+            if sepa_formats:
+                sepa_formats.sort()
+                retval["sepa_format"] = sepa_formats[-1]
             else:
                 messages.warning(self.request, _("No supported SEPA PAIN format"))
 
@@ -594,16 +603,16 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
                 Q(memberships__amount__gt=0)
                 | Q(bookings__debit_account=SpecialAccounts.fees_receivable)
             )
-            .order_by("-id")
-            .distinct()
-            .all()
+                .order_by("-id")
+                .distinct()
+                .all()
         )
 
         return [
             m
             for m in all_members
             if m.balance < 0
-            and m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.OK
+               and m.profile_sepa.sepa_direct_debit_state == SepaDirectDebitState.OK
         ]
 
     def get_context_data(self, **kwargs):
@@ -637,6 +646,7 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
                 else (int(x), int(x))
             )
             for x in form.cleaned_data["exp_member_numbers"].split(",")
+            if x
         ]
 
         with atomic():
@@ -645,9 +655,9 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
                 multiple=True,
                 cor1=form.cleaned_data["cor1"],
                 pain_descriptor="urn:iso:std:iso:20022:tech:xsd:"
-                + form.cleaned_data["sepa_format"],
+                                + form.cleaned_data["sepa_format"],
                 additional_data={
-                    "login_pk": self.selected_account_login_pk,
+                    "user_login_pk": self.selected_account_user_login_pk,
                     "account_iban": form.cleaned_data["own_iban"],
                     "account_bic": form.cleaned_data["own_bic"],
                 },
@@ -655,7 +665,7 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
             debit_payments = []
 
             for member in members:
-                ## Experimental gates
+                # Experimental gates
                 if form.cleaned_data["exp_bank_types"] == "DE":
                     if not member.profile_sepa.iban.upper().startswith("DE"):
                         continue
@@ -665,13 +675,13 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
 
                 if exp_member_numbers:
                     if not any(
-                        a <= int(member.number) <= b for (a, b) in exp_member_numbers
+                            a <= int(member.number) <= b for (a, b) in exp_member_numbers
                     ):
                         continue
 
                 debit_payment = DirectDebitPayment(
                     id=uuid4(),
-                    type="FRST",  ## FIXME Based on existing data
+                    type="FRST",  # FIXME Based on existing data
                     mandate_reference=member.profile_sepa.mandate_reference,
                     collection_date=form.cleaned_data["debit_date"],
                     amount=-member.balance,
@@ -704,7 +714,7 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
                     "additional_information": "",
                     "debit_date": form.cleaned_data["debit_date"],
                     "amount": "%.2f %s"
-                    % (debit_payment.amount, global_config.currency),
+                              % (debit_payment.amount, global_config.currency),
                 }
 
                 mail = config.debit_notification_template.to_mail(
@@ -730,28 +740,75 @@ class PrepareDDView(FinTSInterfaceMixin, FormView):
         )
 
 
-class TransmitDDView(
-    FinTSInterfaceMixin, SingleObjectMixin, TemplateResponseMixin, View
-):
-    template_name = "byro_directdebit/transmit_dd.html"
+class TransmitDDMixin(FinTSInterfaceMixin, SingleObjectMixin):
     model = DirectDebit
+    object: DirectDebit
+    kwargs: dict
+    sepadd_helper: SepaDDFinTSHelper
     success_url = reverse_lazy("plugins:byro_fints:finance.fints.dashboard")
 
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
         self.object = self.get_object()
 
+    def _handle_completed_dd(self, response):
+        self._show_transaction_messages(response)
+        self.sepadd_helper.close()
+        if not DISABLE_AUDITLOGGING:
+            self.object.log(
+                self,
+                ".transmitdd.completed",
+                response_status=response.status,
+                response_messages=response.responses,
+                response_data=response.data,
+                **(
+                    {"uuid": self.kwargs["resume_id"]}
+                    if "resume_id" in self.kwargs
+                    else {}
+                )
+            )
+
+    def _show_transaction_messages(self, response):
+        if response.status == ResponseStatus.UNKNOWN:
+            messages.warning(
+                self.request, _("Unknown response. Final transaction status unknown.")
+            )
+        elif response.status == ResponseStatus.ERROR:
+            messages.error(self.request, _("Error: Transaction not executed."))
+        elif response.status == ResponseStatus.WARNING:
+            messages.warning(
+                self.request, _("Warning: Transaction warning, see other messages.")
+            )
+        elif response.status == ResponseStatus.SUCCESS:
+            messages.success(self.request, _("Transaction executed successfully."))
+
+
+class TransmitDDView(
+    TransmitDDMixin, TemplateResponseMixin, View
+):
+    template_name = "byro_directdebit/transmit_dd.html"
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        self.sepadd_helper = self.fints_interface.get_fints(
+            self.object.additional_data["user_login_pk"],
+            SepaDDFinTSHelper
+        )
+
     def get_context_data(self, **kwargs):
         global_config = Configuration.get_solo()
 
         context = super().get_context_data(**kwargs)
-        context["fints_form"] = None
-        if self.fints_interface:
-            debit_meta = self.fints_interface.sepa_debit_init(
-                self.object.additional_data["login_pk"]
-            )
-            context["fints_form"] = debit_meta["form"]
 
+        fints_form = PinRequestForm(
+            **({
+                   "data": self.request.POST,
+                   "files": self.request.FILES,
+               } if self.request.method in ("POST", "PUT") else {})
+        )
+        self.sepadd_helper.augment_form_pin_fields(fints_form)
+
+        context["fints_form"] = fints_form
         context["debit_count"] = self.object.payments.count()
         context["debit_currency"] = global_config.currency
         context["debit_sum"] = self.object.payments.aggregate(amount=Sum("amount"))[
@@ -764,14 +821,30 @@ class TransmitDDView(
     def get(self, request, *args, **kwargs):
         return self.render_to_response(self.get_context_data())
 
+    @with_fints
     def post(self, request, *args, **kwargs):
         context = self.get_context_data()
 
         if context["fints_form"]:
             if context["fints_form"].is_valid():
+                self.sepadd_helper.load_from_form(context["fints_form"])
+                self.sepadd_helper.open()
+                # FIXME load user_name/pin from form  V
+                # Open helper V
+                # Handle pin error
+                # try finally close helper   V
+                # transmit                   V
+                # show_transaction_messages
+                # pause in session           V
+                #
+                # restore from session       V
+                # show tan request           V
+                #
+                # transmit tan               V
+                # show result                V
+
                 try:
-                    response = self.fints_interface.sepa_debit_do(
-                        self.object.additional_data["login_pk"],
+                    response = self.sepadd_helper.sepa_dd(
                         self.object.additional_data["account_iban"],
                         pain_message=self.object.sepa_xml,
                         multiple=self.object.multiple,
@@ -782,28 +855,22 @@ class TransmitDDView(
                     )
 
                     if isinstance(response, TransactionResponse):
-                        self.fints_interface._show_transaction_messages(response)
+                        self._handle_completed_dd(response)
+                    elif response is False:
+                        resume_id = self.sepadd_helper.save_in_session()
                         if not DISABLE_AUDITLOGGING:
-                            self.object.log(
-                                self,
-                                ".transmitdd.completed",
-                                response_status=response.status,
-                                response_messages=response.responses,
-                                response_data=response.data,
-                            )
-                    elif isinstance(response, str):
-                        if not DISABLE_AUDITLOGGING:
-                            self.object.log(self, ".transmitdd.started", uuid=response)
+                            self.object.log(self, ".transmitdd.started", uuid=resume_id)
                         return HttpResponseRedirect(
                             reverse(
                                 "plugins:byro_directdebit:finance.directdebit.transmit_dd.tan_request",
                                 kwargs={
                                     "pk": self.object.pk,
-                                    "transfer_uuid": response,
+                                    "resume_id": resume_id,
                                 },
                             )
                         )
                     else:
+                        self.sepadd_helper.close()
                         if not DISABLE_AUDITLOGGING:
                             self.object.log(self, ".transmitdd.internal_error")
                         messages.error(
@@ -824,51 +891,42 @@ class TransmitDDView(
 
 
 class TransmitDDTANView(
-    FinTSInterfaceMixin, SingleObjectMixin, TemplateResponseMixin, View
+    TransmitDDMixin, TemplateResponseMixin, View
 ):
     template_name = "byro_directdebit/transmit_dd_tan.html"
-    model = DirectDebit
-    success_url = reverse_lazy("plugins:byro_fints:finance.fints.dashboard")
 
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
-        self.object = self.get_object()
+        self.sepadd_helper = SepaDDFinTSHelper.restore_from_session(self.request, self.kwargs["resume_id"])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.fints_interface:
-            tan_props = self.fints_interface.tan_request_init(
-                self.object.additional_data["login_pk"], self.kwargs["transfer_uuid"]
-            )
-            context.update(tan_props["context"])
-            context["tan_form"] = tan_props["form"]
-            context["tan_template"] = tan_props["template"]
-        return context
+        context["tan_form"] = PinRequestForm(
+            **({
+                   "data": self.request.POST,
+                   "files": self.request.FILES,
+               } if self.request.method in ("POST", "PUT") else {})
+        )
+        self.sepadd_helper.augment_form_pin_fields(context["tan_form"])
+        self.sepadd_helper.augment_form_tan_fields(context["tan_form"])
+        tan_context = self.sepadd_helper.get_tan_context_data(self.sepadd_helper.tan_request)
+        return dict(context, **tan_context)
 
     def get(self, request, *args, **kwargs):
         return self.render_to_response(self.get_context_data())
 
+    @atomic
+    @with_fints
     def post(self, request, *args, **kwargs):
         context = self.get_context_data()
 
         if context["tan_form"]:
             if context["tan_form"].is_valid():
+                self.sepadd_helper.open()
                 try:
-                    response = self.fints_interface.tan_request_send_tan(
-                        self.object.additional_data["login_pk"],
-                        self.kwargs["transfer_uuid"],
-                    )
+                    response = self.sepadd_helper.send_tan(context["tan_form"].cleaned_data["tan"].strip())
                     if isinstance(response, TransactionResponse):
-                        if not DISABLE_AUDITLOGGING:
-                            self.object.log(
-                                self,
-                                ".transmitdd.completed",
-                                response_status=response.status,
-                                response_messages=response.responses,
-                                response_data=response.data,
-                                uuid=self.kwargs["transfer_uuid"],
-                            )
-                        self.fints_interface._show_transaction_messages(response)
+                        self._handle_completed_dd(response)
                         messages.success(
                             self.request,
                             _(
@@ -887,6 +945,8 @@ class TransmitDDTANView(
                             self.request, _("Invalid response: {}".format(response))
                         )
                         self.object.state = DirectDebitState.FAILED.value
+                    self.sepadd_helper.close()
+                    self.sepadd_helper.delete_from_session()
                 except:
                     if not DISABLE_AUDITLOGGING:
                         self.object.log(

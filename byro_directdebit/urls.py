@@ -29,7 +29,7 @@ urlpatterns = [
         name="finance.directdebit.transmit_dd",
     ),
     url(
-        r"^directdebit/transmit_dd/(?P<pk>[0-9a-f-]+)/tan/(?P<transfer_uuid>[0-9a-f-]+|test_data(?:_2)?)$",
+        r"^directdebit/transmit_dd/(?P<pk>[0-9a-f-]+)/tan/(?P<resume_id>[0-9a-f-]+|test_data(?:_2)?)$",
         views.TransmitDDTANView.as_view(),
         name="finance.directdebit.transmit_dd.tan_request",
     ),
